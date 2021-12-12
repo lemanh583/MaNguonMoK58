@@ -16,27 +16,59 @@
     </div>
     <div class="boxchat">
         <div class="boxchat-content">
-            <div class="chat">AhihiAhihiAhihiAhihiAhihiAhihiAhihiAhihiAhihiAhihi</div>
-            <div class="your-text">AhihiAhihiAhihiAhihiAhihiAhihiAhihiAhihiAhihiAhihi</div>
+            <div class="chat">
+                <div class="chat-content">
+                    <div class="content">
+                        AhihiAhihiAhihiAhihiAhihiAhihiAhihiAhihiAhihiAhihi
+                    </div>
+                    <div class="time">
+                        20:54
+                    </div>
 
-            <div class="message-footer ">
-                <div class="icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" style="color: #7d8185;" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-smile">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
-                        <line x1="9" y1="9" x2="9.01" y2="9"></line>
-                        <line x1="15" y1="9" x2="15.01" y2="9"></line>
-                    </svg>
                 </div>
-                <div class="message-input">
-                    <input type="text" class="input-content" placeholder="Nhập tin nhắn" />
+
+            </div>
+            <div class="your-text">
+
+                <div class="your-content">
+                    <div class="content">
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic amet dignissimos incidunt, doloremque dolorem maxime molestias est omnis natus quod explicabo ducimus unde error eaque similique sequi, officiis iusto minus!
+
+                    </div>
+                    <div class="time">
+                        20:54
+                    </div>
+
                 </div>
-                <div class="icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" style="color: #7d8185;" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-paperclip">
-                        <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
-                    </svg>
+
+            </div>
+
+            <div class="message-footer">
+                <div class="message-footer-left">
+                    <div class="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" style="color: #7d8185;" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-smile">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+                            <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                            <line x1="15" y1="9" x2="15.01" y2="9"></line>
+                        </svg>
+                    </div>
+                    <div class="message-input">
+                        <input type="text" class="input-content" placeholder="Nhập tin nhắn" />
+                    </div>
+                    <div class="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" style="color: #7d8185;" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-paperclip">
+                            <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="message-footer-right">
+                    <div class="message-footer-right-content">
+sadasdasd
+                    </div>
                 </div>
             </div>
+
         </div>
 
     </div>
@@ -67,12 +99,25 @@ export default {
 .boxchat .message-footer {
     width: 80%;
     margin: 1% 10%;
-    height: 50px;
+    display: flex;
+
+}
+
+.boxchat .message-footer .message-footer-left{
+    width: 80%;
     background-color: white;
     display: flex;
     align-items: center;
     border-radius: 10px;
+    height: 50px;
+}
 
+.boxchat .message-footer .message-footer-right {
+    width: 20%;
+}
+.boxchat .message-footer .message-footer-right .message-footer-right-content {
+    width: 90%;
+    margin-left: auto;
 }
 
 .boxchat .message-footer .icon {
@@ -89,9 +134,58 @@ export default {
     width: 100%;
     border: none;
 }
+
 .boxchat .message-footer .message-input .input-content:focus-visible {
     outline: none;
     border: none;
+}
+
+.boxchat .boxchat-content .chat {
+    width: 80%;
+    height: 100%;
+    margin: 1% 10%;
+
+}
+
+.boxchat .boxchat-content .your-text {
+    width: 80%;
+    height: 100%;
+    margin: 1% 10%;
+
+}
+
+.boxchat .boxchat-content .chat .chat-content {
+    width: auto;
+    max-width: 80%;
+    background-color: #ffffff;
+    height: auto;
+    max-height: 60%;
+    padding: 5px;
+    border-radius: 10px;
+    display: flex;
+}
+
+.boxchat .boxchat-content .your-text .your-content {
+    margin-left: auto;
+    width: auto;
+    max-width: 80%;
+    background-color: #e0fdc4;
+    height: auto;
+    max-height: 60%;
+    padding: 5px;
+    border-radius: 10px;
+    display: flex;
+
+}
+
+.content {
+    width: 90%;
+}
+
+.time {
+    width: 10%;
+    display: flex;
+    align-items: end;
 }
 
 /*  */
@@ -99,7 +193,7 @@ export default {
     background-image: url("../assets/images/green.png");
     width: 100%;
     height: 100vh;
-  
+
 }
 
 .header {
@@ -137,26 +231,5 @@ export default {
 
 .boxchat .boxchat-content {
     width: 100%;
-}
-
-.chat {
-    /* position: absolute;
-    display: flex;
-    align-items: center;
-    background: #fff;
-    left: 15%;
-    padding: 3px;
-    border-radius: 5px; */
-}
-
-.your-text {
-    /* position: absolute;
-    display: flex;
-    align-items: center;
-    background: #fff;
-    right: 15%;
-    padding: 3px;
-    border-radius: 5px;
-    margin-top: 70px; */
 }
 </style>
