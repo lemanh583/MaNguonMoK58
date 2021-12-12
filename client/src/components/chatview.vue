@@ -96,19 +96,10 @@ export default {
 
 /*  */
 .chatview {
-    width: 100%;
-    height: 100%;
-    position: relative;
     background-image: url("../assets/images/green.png");
     width: 100%;
     height: 100vh;
-    z-index: -9999999;
-}
-
-.background img {
-    width: 100%;
-    height: 100vh;
-    z-index: -9999999;
+  
 }
 
 .header {
@@ -120,7 +111,6 @@ export default {
     padding: 5px 10px 5px 10px;
     position: fixed;
     top: 0;
-    z-index: 999999999;
     background: #ffffff;
 }
 
