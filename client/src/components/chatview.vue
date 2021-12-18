@@ -54,18 +54,25 @@
                         </svg>
                     </div>
                     <div class="message-input">
-                        <input type="text" class="input-content" placeholder="Nhập tin nhắn" />
+                        <input  type="text" class="input-content" placeholder="Nhập tin nhắn" />
                     </div>
                     <div class="icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" style="color: #7d8185;" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-paperclip">
+                        <svg xmlns="http://www.w3.org/2000/svg"  style="color: #7d8185;" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-paperclip">
                             <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
                         </svg>
                     </div>
                 </div>
                 <div class="message-footer-right">
-                    <div class="message-footer-right-content">
-sadasdasd
-                    </div>
+               
+                        <div class="message-footer-right-content">
+
+                            <svg xmlns="http://www.w3.org/2000/svg" style="color: #3390ec;" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-send">
+                                <line x1="22" y1="2" x2="11" y2="13"></line>
+                                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                            </svg>
+
+                        </div>
+               
                 </div>
             </div>
 
@@ -88,36 +95,57 @@ export default {
                 unreadMessage: 150,
                 member: 10,
             }, ],
+        
         };
+
     },
 
 };
 </script>
 
 <style scoped>
+
 /* message-footer */
 .boxchat .message-footer {
-    width: 80%;
-    margin: 1% 10%;
+    width: 90%;
+    margin: 1% 5%;
     display: flex;
 
 }
 
-.boxchat .message-footer .message-footer-left{
+.boxchat .message-footer .message-footer-left {
     width: 80%;
     background-color: white;
     display: flex;
     align-items: center;
     border-radius: 10px;
     height: 50px;
+    margin-left: 6%;
 }
 
 .boxchat .message-footer .message-footer-right {
     width: 20%;
 }
+
 .boxchat .message-footer .message-footer-right .message-footer-right-content {
-    width: 90%;
-    margin-left: auto;
+    width: 35%;
+    height: 100%;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 100%;
+    margin-left: 10%;
+}
+.boxchat .message-footer .message-footer-right .message-footer-right-content:hover {
+ 
+    background-color: #3390ec;
+    
+
+}
+.boxchat .message-footer .message-footer-right .message-footer-right-content svg:hover {
+      fill: white;
+  color: white;
 }
 
 .boxchat .message-footer .icon {
@@ -128,6 +156,7 @@ export default {
 
 .boxchat .message-footer .message-input {
     width: 90%;
+
 }
 
 .boxchat .message-footer .message-input .input-content {
