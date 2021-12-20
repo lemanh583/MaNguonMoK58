@@ -5,16 +5,40 @@ const roles = require("./models/role");
 const users = require("./models/user");
 const bcrypt = require("bcryptjs")
 const router = require("./router");
+const cors = require('cors')
 const app = express();
 app.use(express.json());
 app.use(router);
+const server = require('http').createServer(app)
+const io = require("socket.io")(server, {
+  cors: {
+    origin: "http://localhost:8081",
+    methods: ["GET", "POST"],
+    transports: ['websocket', 'polling'],
+    credentials: true
+  },
+  allowEIO3: true
+})
+
+// const { Server } = require("socket.io");
+// const io = new Server(server, {
+//   cors: {
+//     origin: "*",
+//     // allowedHeaders: ["my-custom-header"],
+//     credentials: true
+//   }
+// });
 
 
+app.use(cors())
 
+
+ 
 const connectDB = async () => {
   try {
     const connect = await mongoose.connect(
-      `mongodb+srv://socket:fbfMyLdSVKDbaR09@dbsocket-app.rwxou.mongodb.net/dbsocket-app?retryWrites=true&w=majority`
+      // `mongodb+srv://socket:fbfMyLdSVKDbaR09@dbsocket-app.rwxou.mongodb.net/dbsocket-app?retryWrites=true&w=majority`,
+      `mongodb://127.0.0.1:27017/socket`
     );
     if (connect) console.log("DB connected");
   } catch (error) {
@@ -81,5 +105,11 @@ const seeder = async (req, res) => {
 
 seeder();
 
-const PORT = process.env.PORT || 3002;
-app.listen(PORT, console.log(`Server run on ${PORT}`));
+io.on('connection', (socket) => {
+  console.log('có người kết nối')
+  // console.log(socket)
+})
+
+// app.get('/', () => console.log('ahihi'))
+const PORT = process.env.PORT || 3003;
+server.listen(PORT, console.log(`Server run on ${PORT}`));
