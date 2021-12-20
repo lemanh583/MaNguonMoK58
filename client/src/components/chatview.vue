@@ -142,7 +142,7 @@ export default {
     background-color: #3390ec;
     
 
-}
+} 
 .boxchat .message-footer .message-footer-right .message-footer-right-content svg:hover {
       fill: white;
   color: white;
