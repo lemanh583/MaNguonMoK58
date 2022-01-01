@@ -4,25 +4,19 @@ class Conversions {
     try {
       const data = req.body;
       if (data.members.length == 0 || !data.type)
-        return res
-          .status(500)
-          .send({ success: false, message: "Please check field" });
+        return res.status(500).send({ success: false, message: "Please check field" });
+      console.log('data', data)
       if (data.members.length == 2) {
-        let ex = await conversionModel.findOne({ members: data.members });
-        let ex2 = await conversionModel
-          .findOne({ members: data.members.reverse() })
-        //   .populate({ path: "sender_id", select: "-password" })
-        //   .populate({ path: "receiver_id", select: "-password" })
-          .populate({ path: "last_message", populate: { path: "sender_id" } });
-        // console.log('ex',ex)
+        let ex = await conversionModel.findOne({ members: data.members })
+                                        .populate({ path: "last_message", populate: { path: "sender_id" } });
+        let ex2 = await conversionModel.findOne({ members: data.members.reverse() })
+                                        .populate({ path: "last_message", populate: { path: "sender_id" } });
         if (ex || ex2) {
-          return res.status(200).send({ success: true, data: ex2, flag: 1 });
+          return res.status(200).send({ success: true, data: ex || ex2, flag: 1 });
         }
       }
       const conv = await conversionModel.create(data);
       let result = await conversionModel.findById(conv._id)
-                        // .populate({path: 'sender_id', select: '-password'})
-                        // .populate({path: 'receiver_id', select: '-password'})
                         .populate({path: 'last_message', populate: {path: "sender_id"} })
       return res.send({ success: true, data: result });
     } catch (error) {

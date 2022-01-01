@@ -201,6 +201,7 @@ export default {
     },
     async handleCreateConversion(user) {
       try {
+        console.log('user', user)
         let token = localStorage.getItem("tokenSocket");
         let res = await axios.post(
           `${process.env.VUE_APP_URL}/conversion/create`,
@@ -216,7 +217,9 @@ export default {
             headers: { Authorization: "Bearer " + token },
           }
         );
+        console.log("res", res);
         if (res.data.success) {
+          this.$socket.emit("joinConversion", res.data.data);
           this.$emit("loadMess", res.data.data);
         }
         console.log("res-create", res.data);
