@@ -6,9 +6,7 @@ class AuthCtr {
   static async login(req, res) {
     try {
       const data = req.body;
-      const find = await userModel.findOne({
-        $or: [{ phone: data.account }, { email: data.account }],
-      });
+      const find = await userModel.findOne({phone: data.phone});
       if (!find) {
         return res.status(500).send({
           success: false,
@@ -27,7 +25,7 @@ class AuthCtr {
           );
           return res
             .status(200)
-            .send({ success: true, token, message: "Login success!" });
+            .send({ success: true, token, message: "Login success!", data: find });
         } else {
           return res.status(500).send({
             success: false,

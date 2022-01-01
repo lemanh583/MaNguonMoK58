@@ -8,17 +8,12 @@ const router = require("./router");
 const cors = require('cors')
 const app = express();
 app.use(express.json());
+app.use(cors())
 app.use(router);
 const server = require('http').createServer(app)
-const io = require("socket.io")(server, {
-  cors: {
-    origin: "http://localhost:8081",
-    methods: ["GET", "POST"],
-    transports: ['websocket', 'polling'],
-    credentials: true
-  },
-  allowEIO3: true
-})
+const socketCtr =  require("./controllers/socket")
+socketCtr.connectSocket(server)
+
 
 // const { Server } = require("socket.io");
 // const io = new Server(server, {
@@ -30,7 +25,7 @@ const io = require("socket.io")(server, {
 // });
 
 
-app.use(cors())
+
 
 
  
@@ -83,17 +78,15 @@ const seeder = async (req, res) => {
 
     const findAdmin = await users.findOne({
       username: "admin",
-      email: "admin@admin.com",
       name: "admin",
       role: 0,
       note: "admin",
     });
     if (!findAdmin) {
       await users.create({
-        email: "admin@admin.com",
         name: "admin",
-        phone: "012345678",
-        password: bcrypt.hashSync("1234567", 10),
+        phone: "1",
+        password: bcrypt.hashSync("1", 10),
         role: 0,
         note: "admin",
       });
@@ -105,10 +98,6 @@ const seeder = async (req, res) => {
 
 seeder();
 
-io.on('connection', (socket) => {
-  console.log('có người kết nối')
-  // console.log(socket)
-})
 
 // app.get('/', () => console.log('ahihi'))
 const PORT = process.env.PORT || 3003;

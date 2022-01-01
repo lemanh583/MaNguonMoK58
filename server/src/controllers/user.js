@@ -1,8 +1,10 @@
 const userModel = require("../models/user")
-const bcrypt = require("bcryptjs")
+const bcrypt = require("bcryptjs");
 class UserCtr {
   static async list(req, res) {
     try {
+      const list = await userModel.find({}).select("-password")
+      return res.send({success: true, data: list})
     } catch (error) {
       console.error(error);
       return res.status(500).send({ success: false, message: error.message });
@@ -27,9 +29,14 @@ class UserCtr {
   static async create(req, res) {
     try {
       const data = req.body;
+      console.log('body', data)
       const salt = bcrypt.genSaltSync(10);
       const hashPass = bcrypt.hashSync(data.password, salt);
       data.password = hashPass;
+      const check = await userModel.findOne({phone: data.phone})
+      console.log('check', check)
+      if(check)
+        return res.status(500).send({ success: false, message: "User exists" });
       const newUser = await userModel.create(data);
       if (!newUser)
         return res.status(500).send({ success: false, message: "create failed" });
@@ -102,6 +109,22 @@ class UserCtr {
       return res.status(500).send({ success: false, message: error.message });
     }
   }
+
+  static async checkToken(req, res) {
+    try {
+      const _id = req.user_id;
+      if (!_id)
+        return res.status(500).send({ success: false, message: "no id" });
+      const user = await userModel.findById(_id).select('-password');
+      if (!user)
+        return res.status(500).send({ success: false, message: "not user" });
+      return res.send({ success: true, data: user });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).send({ success: false, message: error.message });
+    }
+  }
+
 }
 
 module.exports = UserCtr;

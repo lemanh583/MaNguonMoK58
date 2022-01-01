@@ -3,9 +3,11 @@ const Schema = mongoose.Schema;
 
 const messageSchema = new Schema(
   {
-    id_user: {type: Schema.Types.ObjectId, ref: "users"},
-    id_room: {type: Schema.Types.ObjectId, ref: "rooms"},
+    sender_id: {type: Schema.Types.ObjectId, ref: "users"},
+    conversion_id: {type: Schema.Types.ObjectId, ref: "conversions"},
+    receiver_id: {type: Schema.Types.ObjectId, ref: "users"},
     message: String,
+    type: String,
     created_time: {type: Number, default: Date.now()},
     updated_time: {type: Number, default: Date.now()}
   },
