@@ -2,7 +2,7 @@
   <div class="chatview">
     <div class="header">
       <img src="../assets/images/cat.jpg" alt="" />
-      <div >
+      <div>
         <div class="information">
           <div class="name">{{ detailUser.name }}</div>
           <!-- <div class="member">{{ detailUser.member }} members</div> -->
@@ -15,24 +15,28 @@
     </div>
     <div class="boxchat">
       <div class="boxchat-content">
-        <span v-for="(m, i) in messages" :key="i">
-          <div :class="[user.id == m.sender_id ? 'your-text' : 'chat']">
-            <div
-              :class="[
-                user.id == m.sender_id ? 'your-content' : 'chat-content',
-              ]"
-            >
+        <div class="list-chat">
+          <span v-for="(m, i) in messages" :key="i">
+            <div :class="[user.id == m.sender_id ? 'your-text' : 'chat']">
               <div
-                :class="[user.id == m.sender_id ? 'content-right' : 'content']"
+                :class="[
+                  user.id == m.sender_id ? 'your-content' : 'chat-content',
+                ]"
               >
-                {{ m.message }}
-              </div>
-              <div :class="[user.id == m.sender_id ? 'your-time' : 'time']">
-                {{ new Date(m.created_time).toLocaleString() }}
+                <div
+                  :class="[
+                    user.id == m.sender_id ? 'content-right' : 'content',
+                  ]"
+                >
+                  {{ m.message }}
+                </div>
+                <div :class="[user.id == m.sender_id ? 'your-time' : 'time']">
+                  {{ new Date(m.created_time).toLocaleString() }}
+                </div>
               </div>
             </div>
-          </div>
-        </span>
+          </span>
+        </div>
 
         <form v-if="active" method="POST">
           <div class="message-footer">
@@ -179,9 +183,9 @@ export default {
     },
   },
   sockets: {
-      getMessage: function(data) {
-          this.messages.push(data)
-      }
+    getMessage: function (data) {
+      this.messages.push(data);
+    },
   },
   mounted() {
     //   this.$options.sockets['getMessage'] = (data) => {
@@ -199,7 +203,7 @@ export default {
     async createMessage(e) {
       e.preventDefault();
       try {
-          if(!this.text) return
+        if (!this.text) return;
         let res = await axios.post(
           `${process.env.VUE_APP_URL}/message/create`,
           {
@@ -213,7 +217,7 @@ export default {
           }
         );
         //send message
-        
+
         if (res.data.success) {
           let updateConve = await axios.post(
             `${process.env.VUE_APP_URL}/conversion/update/${this.cvs_id}`,
@@ -222,11 +226,11 @@ export default {
               updated_time: Date.now(),
             }
           );
-            this.messages.push(res.data.data)
-            this.$socket.emit('sendMessage', res.data.data)
+          this.messages.push(res.data.data);
+          this.$socket.emit("sendMessage", res.data.data);
           console.log("updateConve", updateConve);
           this.text = "";
-          this.$emit('loadConver', true)
+          this.$emit("loadConver", true);
         }
         console.log("res", res.data);
       } catch (error) {
@@ -253,10 +257,10 @@ export default {
         let user = await axios.get(
           `${process.env.VUE_APP_URL}/user/get/${idRe}`
         );
-        if(user.data.success) {
-            this.detailUser = user.data.data
+        if (user.data.success) {
+          this.detailUser = user.data.data;
         }
-        console.log('user', user.data)
+        console.log("user", user.data);
       } catch (error) {
         console.error(error.response);
       }
@@ -334,13 +338,13 @@ export default {
 
 .boxchat .boxchat-content .chat {
   width: 80%;
-  height: 100%;
+  /* height: 100%; */
   margin: 1% 10%;
 }
 
 .boxchat .boxchat-content .your-text {
   width: 80%;
-  height: 100%;
+  /* height: 100%; */
   margin: 1% 10%;
 }
 
@@ -352,11 +356,11 @@ export default {
   max-height: 60%;
   padding: 5px;
   border-radius: 10px;
-  position: relative;;
+  position: relative;
   /* display: flex; */
 }
 .chat-content:hover .time {
-    display: block;
+  display: block;
 }
 .boxchat .boxchat-content .your-text .your-content {
   margin-left: auto;
@@ -390,7 +394,6 @@ export default {
   top: -35px;
   left: 0;
   display: none;
-
 }
 
 /*  */
@@ -454,5 +457,9 @@ export default {
 }
 .your-content:hover .your-time {
   display: block;
+}
+.list-chat {
+  height: 530px;
+  overflow-y: scroll;
 }
 </style>
