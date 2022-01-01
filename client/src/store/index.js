@@ -6,9 +6,9 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
   state: {
     user: {
-        name: "abc",
-        role: "abc",
-        id: "abc",
+        name: "",
+        role: "",
+        id: "",
         auth: false
     }
   },

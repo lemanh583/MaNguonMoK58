@@ -13,10 +13,10 @@ class UserCtr {
 
   static async get(req, res) {
     try {
-      const _id = req.user_id;
+      const _id = req.params.id;
       if (!_id)
         return res.status(500).send({ success: false, message: "no id" });
-      const user = await userModel.findById(_id);
+      const user = await userModel.findById(_id).select('-password');
       if (!user)
         return res.status(500).send({ success: false, message: "not user" });
       return res.send({ success: true, data: user });

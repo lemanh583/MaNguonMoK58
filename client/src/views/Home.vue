@@ -3,8 +3,8 @@
     <!-- <img alt="Vue logo" src="../assets/logo.png"> -->
     <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
      <!-- {{this.$store.state.user}} -->
-     <ChatList style="width: 25%" @loadMess="loadMess"/>
-    <ChatView style="width: 75%" :conversion="conversion"/>
+     <ChatList style="width: 25%" @loadMess="loadMess" :isLoad="isLoad"/>
+    <ChatView style="width: 75%" @loadConver="loadConver" :conversion="conversion"/>
   </div>
 </template>
 
@@ -23,13 +23,17 @@ export default {
   },
   data(){
     return {
-      conversion: {}
+      conversion: {},
+      isLoad: true
     }
   },
   methods: {
     loadMess(data) {  
       this.conversion = data
       console.log('conversion', this.conversion)
+    },
+    loadConver() {
+      this.isLoad = !this.isLoad
     }
   }
 }

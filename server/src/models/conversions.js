@@ -6,7 +6,10 @@ const conversionSchema = new Schema(
     members: Array,
     type: String, // private or group 
     name: String,
-    created_by: {type: Schema.Types.ObjectId, ref: "users"},
+    sender_id: {type: Schema.Types.ObjectId, ref: "users"},
+    sender_name: String,
+    receiver_id: {type: Schema.Types.ObjectId, ref: "users"},
+    receiver_name: String,
     last_message: {type: Schema.Types.ObjectId, ref: "messages"},
     created_time: {type: Number, default: Date.now()},
     updated_time: {type: Number, default: Date.now()}
