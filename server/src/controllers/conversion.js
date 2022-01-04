@@ -46,6 +46,7 @@ class Conversions {
     try {
       const id = req.params.id; //id converison
       const data = req.body;
+      console.log('data', data)
       if (!id)
         return res.status(500).send({ success: false, message: "no id" });
       const result = await conversionModel.findByIdAndUpdate(id, data, {

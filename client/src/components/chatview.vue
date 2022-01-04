@@ -4,19 +4,61 @@
       <img src="../assets/images/cat.jpg" alt="" />
       <div>
         <div class="information">
-          <div class="name">{{ detailUser.name }}</div>
-          <!-- <div class="member">{{ detailUser.member }} members</div> -->
+          <div class="name">
+            {{ conversion.name ? conversion.name : detailUser.name }}
+          </div>
+          <div class="member">
+            {{ conversion.name ? conversion.members.length : "" }} members
+          </div>
         </div>
         <!-- <div v-b-toggle.my-collapse><i class="fas fa-ellipsis-v"></i></div> -->
         <b-collapse id="my-collapse">
           <b-card title="Collapsible card"> Hello world! </b-card>
         </b-collapse>
       </div>
+      <div
+        v-if="conversion.name && conversion.sender_id == user.id"
+        style="margin-left: 50px; display: flex; position: relative"
+      >
+        <button class="btn btn-success" @click="displayAddUser">
+          Thêm thành viên
+        </button>
+        <!-- <form action=""> -->
+        <input
+          v-if="showAddUSer"
+          type="text"
+          style="margin-left: 50px"
+          v-model="search"
+          @keypress="handleChangeAddUser"
+        />
+        <div v-if="showAddUSer" class="list-user">
+          <div style="display: flex" v-for="u in listUser" :key="u._id">
+            <div style="width: 100px">{{ u.name }}</div>
+            <div style="width: 100px">{{ u.phone }}</div>
+            <div style="width: 50px">
+              <button @click="handleAddUser(u._id)">Thêm</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="boxchat">
       <div class="boxchat-content">
-        <div class="list-chat">
+        <div class="list-chat" v-chat-scroll>
           <span v-for="(m, i) in messages" :key="i">
+            <!-- <img style="width: 50px; height: 50px;position: absolute;" src="../assets/images/cat.jpg" alt=""> -->
+            <p
+              v-if="m.sender_id != user.id && conversion.type == 'group'"
+              style="
+                margin: 0;
+                text-align: left;
+                margin-left: 10%;
+                font-size: 12px;
+                margin-bottom: -9px;
+              "
+            >
+              {{ m.sender_name }}
+            </p>
             <div :class="[user.id == m.sender_id ? 'your-text' : 'chat']">
               <div
                 :class="[
@@ -28,7 +70,8 @@
                     user.id == m.sender_id ? 'content-right' : 'content',
                   ]"
                 >
-                  {{ m.message }}
+                  <span v-if="m.type == 'image'"><img :src="m.message" alt="" style="max-width: 300px;"></span>
+                  <span v-else>{{ m.message }}</span>
                 </div>
                 <div :class="[user.id == m.sender_id ? 'your-time' : 'time']">
                   {{ new Date(m.created_time).toLocaleString() }}
@@ -70,23 +113,26 @@
                 />
               </div>
               <div class="icon">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  style="color: #7d8185"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="feather feather-paperclip"
-                >
-                  <path
-                    d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"
-                  ></path>
-                </svg>
+                
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    style="color: #7d8185"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="feather feather-paperclip"
+                    @click="handleOpenFile"
+                  >
+                    <path
+                      d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"
+                    ></path>
+                  </svg>
+                <input type="file" ref="inputFile" v-show="false" @change="handleImg($event)">
               </div>
             </div>
             <div class="message-footer-right">
@@ -172,6 +218,11 @@ export default {
       text: "",
       active: false,
       detailUser: {},
+      search: "",
+      listUser: [],
+      showAddUSer: false,
+      flag: false,
+      img: null
     };
   },
   watch: {
@@ -185,17 +236,12 @@ export default {
   sockets: {
     getMessage: function (data) {
       this.messages.push(data);
+      // this.$emit("loadConver", true);
     },
   },
-  mounted() {
-    //   this.$options.sockets['getMessage'] = (data) => {
-    //       console.log('data', data)
-    //   }
-    //   this.$socket.on('getMessage', data => {
-    //       console.log('data', data)
-    //       this.messages.push(data)
-    //   })
-  },
+  // async mounted() {
+  //   await this.loadUser();
+  // },
   computed: {
     ...mapState(["user"]),
   },
@@ -204,18 +250,37 @@ export default {
       e.preventDefault();
       try {
         if (!this.text) return;
+        
+        if(this.flag) {
+          let data = new FormData()
+          data.append('sampleFile', this.img)
+          let rsImg = await axios.post(`${process.env.VUE_APP_URL}/upload`,
+          data,
+           {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+          )
+          this.text = rsImg.data.data.url
+          console.log('rsupload', rsImg.data.data)
+        }
+
         let res = await axios.post(
           `${process.env.VUE_APP_URL}/message/create`,
           {
             sender_id: this.user.id,
             conversion_id: this.cvs_id,
+            sender_name: this.user.name,
             receiver_id:
               this.user.id == this.conversion.sender_id
                 ? this.conversion.receiver_id
                 : this.conversion.sender_id,
             message: this.text,
+            type: !this.flag ? "message" : "image"
           }
         );
+        this.flag = false
         //send message
 
         if (res.data.success) {
@@ -265,6 +330,59 @@ export default {
         console.error(error.response);
       }
     },
+    async loadUser() {
+      try {
+        let rs = await axios.post(`${process.env.VUE_APP_URL}/user/list`, {
+          search: this.search,
+        });
+        if (rs.data.success) {
+          this.listUser = rs.data.data;
+          this.listUser = this.listUser.filter(
+            (val) => !this.conversion.members.includes(val._id)
+          );
+          // console.log('sds',this.listUser)
+          console.log("sds", this.listUser);
+        }
+        console.log("rs", rs);
+      } catch (error) {
+        console.error(error.response);
+      }
+    },
+    async handleChangeAddUser() {
+      // console.log(this.search)
+      await this.loadUser();
+    },
+    async displayAddUser() {
+      this.showAddUSer = !this.showAddUSer;
+      await this.loadUser();
+    },
+    async handleAddUser(id) {
+      try {
+        console.log("id", id);
+        let arrMembers = this.conversion.members;
+        arrMembers.push(id);
+        // console.log('arrMembers', arrMembers)
+        let rs = await axios.post(
+          `${process.env.VUE_APP_URL}/conversion/update/${this.conversion._id}`,
+          {
+            members: arrMembers,
+          }
+        );
+        console.log("rsc", rs);
+        await this.loadUser();
+      } catch (error) {
+        console.error(error.response);
+      }
+    },
+    handleOpenFile() {
+      this.$refs.inputFile.click()
+    },
+    handleImg(event) {
+      console.log('ev', event.target.files[0])
+      this.img = event.target.files[0];
+      this.text = event.target.files[0].name
+      this.flag = true
+    }
   },
 };
 </script>
@@ -378,6 +496,7 @@ export default {
 
 .content {
   /* width: 90%; */
+  text-align: left;
 }
 
 .time {
@@ -459,7 +578,17 @@ export default {
   display: block;
 }
 .list-chat {
-  height: 530px;
+  /* height: 530px; */
+  max-height: 530px;
   overflow-y: scroll;
+}
+.list-user {
+  /* display: flex; */
+  position: absolute;
+  max-width: 300px;
+  top: 40px;
+  left: 195px;
+  background-color: rgb(202, 90, 90);
+  border-radius: 5px;
 }
 </style>

@@ -4,7 +4,7 @@ const userCtr = require("../../controllers/user")
 const auth = require("../../middleware/authToken")
 
 userRoute
-    .get("/list", userCtr.list)
+    .post("/list", userCtr.list)
     .get("/get/:id", userCtr.get)
     .post("/create", userCtr.create)
     .post("/update/:id", userCtr.update)

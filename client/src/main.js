@@ -7,6 +7,8 @@ import VueSocketIO from 'vue-socket.io'
 import router from './router'
 import Vuex from 'vuex'
 import store from "./store"
+import VueChatScroll from 'vue-chat-scroll'
+Vue.use(VueChatScroll)
 
 Vue.use(Vuex)
 Vue.use(BootstrapVue);

@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const conversionSchema = new Schema(
   {
-    members: Array,
+    members: [{type: Schema.Types.ObjectId, ref: "users"}],
     type: String, // private or group 
     name: String,
     sender_id: {type: Schema.Types.ObjectId, ref: "users"},

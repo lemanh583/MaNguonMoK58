@@ -71,6 +71,7 @@
               <div class="content-top">
                 <div class="name">
                   {{
+                    conv.name ? conv.name : 
                     conv.sender_id == user.id
                       ? conv.receiver_name
                       : conv.sender_name
@@ -83,8 +84,8 @@
               </div>
               <div class="content-bot">
                 <div class="message">
-                  <div>{{ conv.last_message.sender_id.name }}:</div>
-                  <div>{{ conv.last_message.message }}</div>
+                  <div>{{conv.last_message ? conv.last_message.sender_id.name : '' }}:</div>
+                  <div>{{conv.last_message ? conv.last_message.message : ''}}</div>
                 </div>
                 <div class="unread-message">
                   <div class="number">1</div>
@@ -156,7 +157,7 @@ export default {
     ...mapMutations(["setUser"]),
     async getAllUser() {
       try {
-        const res = await axios.get(`${process.env.VUE_APP_URL}/user/list`);
+        const res = await axios.post(`${process.env.VUE_APP_URL}/user/list`);
         if (res.data.success) {
           this.listUser = res.data.data.filter(
             (val) => val._id != this.$store.state.user.id
@@ -239,7 +240,7 @@ export default {
         console.log("listConv", res.data);
         if (res.data.success) {
           this.listConversion = res.data.data.filter(
-            (cvs) => cvs.last_message || cvs.type == "public"
+            (cvs) => cvs.last_message || cvs.type == "group"
           );
           // this.listConversion = res.data.data;
           this.listConversion.forEach((val) =>
@@ -280,7 +281,7 @@ export default {
             members: [this.$store.state.user.id],
             sender_id: this.$store.state.user.id,
             sender_name: this.$store.state.user.name,
-            receiver_id: "",
+            receiver_id: this.$store.state.user.id,
             name: this.groupName,
           },
           {

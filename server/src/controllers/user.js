@@ -3,7 +3,17 @@ const bcrypt = require("bcryptjs");
 class UserCtr {
   static async list(req, res) {
     try {
-      const list = await userModel.find({}).select("-password")
+      const {search} = req.body
+      let condition = {}
+      if(search) {
+        let searchReg = new RegExp(`.*${search}.*`,'i')
+        condition['$or'] = [
+          {name: searchReg},
+          {phone: searchReg},
+        ]
+      }
+      // console.log('con', condition)
+      const list = await userModel.find(condition).select("-password")
       return res.send({success: true, data: list})
     } catch (error) {
       console.error(error);
