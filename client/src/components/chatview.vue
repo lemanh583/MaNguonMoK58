@@ -20,8 +20,12 @@
         v-if="conversion.name && conversion.sender_id == user.id"
         style="margin-left: 50px; display: flex; position: relative"
       >
-        <button class="btn btn-success" @click="displayAddUser">
-          Thêm thành viên
+        <button
+          class="btn btn-success"
+          @click="displayAddUser"
+          style="width: 150px"
+        >
+          {{ showAddUSer ? "Huỷ" : "Thêm thành viên" }}
         </button>
         <!-- <form action=""> -->
         <input
@@ -36,7 +40,8 @@
             <div style="width: 100px">{{ u.name }}</div>
             <div style="width: 100px">{{ u.phone }}</div>
             <div style="width: 50px">
-              <button @click="handleAddUser(u._id)">Thêm</button>
+              <button v-if="!u.in" @click="handleAddUser(u._id)">Thêm</button>
+              <button v-if="u.in && u._id != conversion.sender_id" @click="handleRemoveUser(u._id)">Xoá</button>
             </div>
           </div>
         </div>
@@ -70,7 +75,9 @@
                     user.id == m.sender_id ? 'content-right' : 'content',
                   ]"
                 >
-                  <span v-if="m.type == 'image'"><img :src="m.message" alt="" style="max-width: 300px;"></span>
+                  <span v-if="m.type == 'image'"
+                    ><img :src="m.message" alt="" style="max-width: 300px"
+                  /></span>
                   <span v-else>{{ m.message }}</span>
                 </div>
                 <div :class="[user.id == m.sender_id ? 'your-time' : 'time']">
@@ -113,26 +120,30 @@
                 />
               </div>
               <div class="icon">
-                
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    style="color: #7d8185"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="feather feather-paperclip"
-                    @click="handleOpenFile"
-                  >
-                    <path
-                      d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"
-                    ></path>
-                  </svg>
-                <input type="file" ref="inputFile" v-show="false" @change="handleImg($event)">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  style="color: #7d8185"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="feather feather-paperclip"
+                  @click="handleOpenFile"
+                >
+                  <path
+                    d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"
+                  ></path>
+                </svg>
+                <input
+                  type="file"
+                  ref="inputFile"
+                  v-show="false"
+                  @change="handleImg($event)"
+                />
               </div>
             </div>
             <div class="message-footer-right">
@@ -222,7 +233,7 @@ export default {
       listUser: [],
       showAddUSer: false,
       flag: false,
-      img: null
+      img: null,
     };
   },
   watch: {
@@ -250,20 +261,21 @@ export default {
       e.preventDefault();
       try {
         if (!this.text) return;
-        
-        if(this.flag) {
-          let data = new FormData()
-          data.append('sampleFile', this.img)
-          let rsImg = await axios.post(`${process.env.VUE_APP_URL}/upload`,
-          data,
-           {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-          )
-          this.text = rsImg.data.data.url
-          console.log('rsupload', rsImg.data.data)
+
+        if (this.flag) {
+          let data = new FormData();
+          data.append("sampleFile", this.img);
+          let rsImg = await axios.post(
+            `${process.env.VUE_APP_URL}/upload`,
+            data,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+          this.text = rsImg.data.data.url;
+          console.log("rsupload", rsImg.data.data);
         }
 
         let res = await axios.post(
@@ -277,10 +289,10 @@ export default {
                 ? this.conversion.receiver_id
                 : this.conversion.sender_id,
             message: this.text,
-            type: !this.flag ? "message" : "image"
+            type: !this.flag ? "message" : "image",
           }
         );
-        this.flag = false
+        this.flag = false;
         //send message
 
         if (res.data.success) {
@@ -337,9 +349,17 @@ export default {
         });
         if (rs.data.success) {
           this.listUser = rs.data.data;
-          this.listUser = this.listUser.filter(
-            (val) => !this.conversion.members.includes(val._id)
-          );
+          this.listUser = this.listUser.map((val) => {
+            if (this.conversion.members.includes(val._id)) {
+              val.in = true;
+            } else {
+              val.in = false;
+            }
+            return val;
+          });
+          // this.listUser = this.listUser.filter(
+          //   (val) => !this.conversion.members.includes(val._id)
+          // );
           // console.log('sds',this.listUser)
           console.log("sds", this.listUser);
         }
@@ -374,15 +394,36 @@ export default {
         console.error(error.response);
       }
     },
+    async handleRemoveUser(id) {
+      try {
+        console.log("id", id);
+        let arrMembers = this.conversion.members;
+        let index = arrMembers.findIndex((m) => m === id);
+        if (index == -1) return;
+        arrMembers.splice(index, 1);
+        let updateConve = await axios.post(
+          `${process.env.VUE_APP_URL}/conversion/update/${this.cvs_id}`,
+          {
+            members: arrMembers,
+          }
+        );
+        if(updateConve.data.success) {
+           await this.loadUser();
+        }
+       
+      } catch (error) {
+        console.error(error.response);
+      }
+    },
     handleOpenFile() {
-      this.$refs.inputFile.click()
+      this.$refs.inputFile.click();
     },
     handleImg(event) {
-      console.log('ev', event.target.files[0])
+      console.log("ev", event.target.files[0]);
       this.img = event.target.files[0];
-      this.text = event.target.files[0].name
-      this.flag = true
-    }
+      this.text = event.target.files[0].name;
+      this.flag = true;
+    },
   },
 };
 </script>
