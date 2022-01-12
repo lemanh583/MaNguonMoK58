@@ -31,14 +31,14 @@
 
                                     <input class="form__input form-control form-control-lg" placeholder="Mời nhập số điện thoại" id="form1Example13" v-model.trim="$v.phone.$model">
                                 </div>
-                                <div class="error" v-if="!$v.phone.required">Số điện thoại không đúng.</div>
+                                <!-- <div class="error" v-if="!$v.phone.required">Số điện thoại không đúng.</div> -->
                                 <div class="error" v-if="!$v.phone.minLength">Số điện thoại phải có {{$v.phone.$params.minLength.min}} số.</div>
                                 <!-- mật khẩu input -->
                                 <div class="form-outline mb-4" :class="{ 'form-group--error': $v.password.$error }">
 
                                     <input type="password" class="form__input form-control form-control-lg" placeholder="Mời nhập mật khẩu" id="form1Example13" v-model.trim="$v.password.$model">
                                 </div>
-                                <div class="error" v-if="!$v.password.required">Mật khẩu không đúng.</div>
+                                <!-- <div class="error" v-if="!$v.password.required">Mật khẩu không đúng.</div> -->
                                 <div class="error" v-if="!$v.password.minLength">Mật khẩu phải có {{$v.password.$params.minLength.min}} ký tự.</div>
                                 <!-- <button class="button" @click="handleLogin" >Submit!</button> -->
 
