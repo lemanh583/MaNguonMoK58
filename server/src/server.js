@@ -37,8 +37,8 @@ socketCtr.connectSocket(server)
 const connectDB = async () => {
   try {
     const connect = await mongoose.connect(
-      // `mongodb+srv://socket:fbfMyLdSVKDbaR09@dbsocket-app.rwxou.mongodb.net/dbsocket-app?retryWrites=true&w=majority`,
-      `mongodb://127.0.0.1:27017/socket`
+      `mongodb+srv://socket:fbfMyLdSVKDbaR09@dbsocket-app.rwxou.mongodb.net/dbsocket-app?retryWrites=true&w=majority`,
+      // `mongodb://127.0.0.1:27017/socket`
     );
     if (connect) console.log("DB connected");
   } catch (error) {

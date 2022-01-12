@@ -25,20 +25,29 @@
                             <div class="mb-4">
                                 <h1>Welcome</h1>
                             </div>
-                            <form method="POST">
-                                <!-- Email input -->
-                                <div class="form-outline mb-4">
+                            <form @submit.prevent="handleLogin" method="POST">
+                                <!-- sđt input -->
+                                <div class="form-outline mb-4" :class="{ 'form-group--error': $v.phone.$error }">
 
-                                    <input type="phone" v-model="phone" id="form1Example13" placeholder="Mời nhập số điện thoại" class="form-control form-control-lg" />
-                                  
+                                    <input class="form__input form-control form-control-lg" placeholder="Mời nhập số điện thoại" id="form1Example13" v-model.trim="$v.phone.$model">
                                 </div>
+                                <div class="error" v-if="!$v.phone.required">Số điện thoại không đúng.</div>
+                                <div class="error" v-if="!$v.phone.minLength">Số điện thoại phải có {{$v.phone.$params.minLength.min}} số.</div>
+                                <!-- mật khẩu input -->
+                                <div class="form-outline mb-4" :class="{ 'form-group--error': $v.password.$error }">
+
+                                    <input type="password" class="form__input form-control form-control-lg" placeholder="Mời nhập mật khẩu" id="form1Example13" v-model.trim="$v.password.$model">
+                                </div>
+                                <div class="error" v-if="!$v.password.required">Mật khẩu không đúng.</div>
+                                <div class="error" v-if="!$v.password.minLength">Mật khẩu phải có {{$v.password.$params.minLength.min}} ký tự.</div>
+                                <!-- <button class="button" @click="handleLogin" >Submit!</button> -->
 
                                 <!-- Password input -->
-                                <div class="form-outline mb-4">
+                                <!-- <div class="form-outline mb-4">
 
                                     <input type="password" v-model="password" id="form1Example23" placeholder="Mời nhập mật khẩu" class="form-control form-control-lg" />
-                                  
-                                </div>
+
+                                </div> -->
 
                                 <div class="d-flex justify-content-around align-items-center mb-4">
                                     <!-- Checkbox -->
@@ -50,8 +59,10 @@
                                 </div>
 
                                 <!-- Submit button -->
-                                <button type="submit"  @click="handleLogin" class="btn btn-primary btn-lg btn-block">Sign in</button>
-
+                                <button type="submit" class="btn btn-primary btn-lg btn-block" :disabled="submitStatus === 'PENDING'">Sign in</button>
+                                <p class="typo__p" v-if="submitStatus === 'OK'">Thanks for your submission!</p>
+                                <p class="typo__p" v-if="submitStatus === 'ERROR'">Số điện thoại hoặc mật khẩu không đúng.</p>
+                                <p class="typo__p" v-if="submitStatus === 'PENDING'">Sending...</p>
                             </form>
                         </div>
                     </div>
@@ -64,15 +75,31 @@
 </template>
 
 <script>
+import {
+    required,
+    minLength
+} from 'vuelidate/lib/validators'
 import axios from "axios"
 import {
     mapMutations
 } from "vuex"
+
 export default {
     data() {
         return {
-            phone: null,
-            password: null
+            phone: '',
+            password: '',
+            submitStatus: null
+        }
+    },
+    validations: {
+        phone: {
+            required,
+            minLength: minLength(10)
+        },
+        password: {
+            required,
+            minLength: minLength(8)
         }
     },
     methods: {
@@ -80,9 +107,13 @@ export default {
             "setUser"
         ]),
         async handleLogin(event) {
-            try {
-                event.preventDefault();
-                const response = await axios.post(`${process.env.VUE_APP_URL}/auth/login`, {
+            this.$v.$touch()
+            // console.log(this.$v.$invalid);
+            if (this.$v.$invalid) {
+                this.submitStatus = 'ERROR'
+            } else {
+                 event.preventDefault();
+                  const response = await axios.post(`${process.env.VUE_APP_URL}/auth/login`, {
                     phone: this.phone,
                     password: this.password
                 })
@@ -99,9 +130,31 @@ export default {
                         path: "/"
                     })
                 }
-            } catch (error) {
-                console.error(error.response)
+            
             }
+            // try {
+            //     event.preventDefault();
+
+            //     const response = await axios.post(`${process.env.VUE_APP_URL}/auth/login`, {
+            //         phone: this.phone,
+            //         password: this.password
+            //     })
+            //     if (response.data.success) {
+            //         let user = {
+            //             name: response.data.data.name,
+            //             role: response.data.data.role,
+            //             id: response.data.data._id,
+            //             auth: true
+            //         }
+            //         this.setUser(user)
+            //         localStorage.setItem('tokenSocket', response.data.token)
+            //         this.$router.push({
+            //             path: "/"
+            //         })
+            //     }
+            // } catch (error) {
+            //     console.error(error.response)
+            // }
         }
     }
 }
