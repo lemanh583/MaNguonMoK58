@@ -1,5 +1,7 @@
 const userModel = require("../models/user")
 const bcrypt = require("bcryptjs");
+const roleModel = require("../models/role")
+const convModel = require("../models/conversions")
 class UserCtr {
   static async list(req, res) {
     try {
@@ -13,7 +15,15 @@ class UserCtr {
         ]
       }
       // console.log('con', condition)
-      const list = await userModel.find(condition).select("-password")
+      let list = await userModel.find(condition).select("-password")
+      list = await Promise.all(
+        list.map ( async( user) => {
+          let newData = Object.assign({}, user._doc)
+          let role = await roleModel.findOne({role: user.role})
+          newData.name_role = role.name
+          return newData
+        })
+      )
       return res.send({success: true, data: list})
     } catch (error) {
       console.error(error);
@@ -39,17 +49,20 @@ class UserCtr {
   static async create(req, res) {
     try {
       const data = req.body;
-      console.log('body', data)
+      // console.log('body', data)
       const salt = bcrypt.genSaltSync(10);
       const hashPass = bcrypt.hashSync(data.password, salt);
       data.password = hashPass;
       const check = await userModel.findOne({phone: data.phone})
-      console.log('check', check)
+      // console.log('check', check)
       if(check)
         return res.status(500).send({ success: false, message: "User exists" });
       const newUser = await userModel.create(data);
       if (!newUser)
         return res.status(500).send({ success: false, message: "create failed" });
+      let conv = await convModel.findOne({name: "Nhóm chung", type: "group"})
+      conv.members.push(newUser._id)
+      await conv.save()
       return res.send({ success: true, data: newUser});
     } catch (error) {
       console.error(error);

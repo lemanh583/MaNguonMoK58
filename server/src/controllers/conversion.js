@@ -5,7 +5,7 @@ class Conversions {
       const data = req.body;
       if (data.members.length == 0 || !data.type)
         return res.status(500).send({ success: false, message: "Please check field" });
-      console.log('data', data)
+      // console.log('data', data)
       if (data.members.length == 2) {
         let ex = await conversionModel.findOne({ members: data.members })
                                         .populate({ path: "last_message", populate: { path: "sender_id" } });
@@ -13,6 +13,12 @@ class Conversions {
                                         .populate({ path: "last_message", populate: { path: "sender_id" } });
         if (ex || ex2) {
           return res.status(200).send({ success: true, data: ex || ex2, flag: 1 });
+        }
+      }
+      if(data.name) {
+        const findConv = await conversionModel.findOne({name: data.name})
+        if(findConv) {
+          return res.status(500).send({success: false, message: "Name exists"})
         }
       }
       const conv = await conversionModel.create(data);

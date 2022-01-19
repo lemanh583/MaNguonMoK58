@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const express = require("express");
 const roles = require("./models/role");
 const users = require("./models/user");
+const conversions = require("./models/conversions")
 const bcrypt = require("bcryptjs")
 const router = require("./router");
 const cors = require('cors')
@@ -80,7 +81,7 @@ const seeder = async (req, res) => {
         })
       );
     }
-
+    let admin = {}
     const findAdmin = await users.findOne({
       username: "admin",
       name: "admin",
@@ -88,14 +89,32 @@ const seeder = async (req, res) => {
       note: "admin",
     });
     if (!findAdmin) {
-      await users.create({
+      admin = await users.create({
         name: "admin",
-        phone: "1",
-        password: bcrypt.hashSync("1", 10),
+        phone: "0123456789",
+        password: bcrypt.hashSync("12345678", 10),
         role: 0,
         note: "admin",
       });
     }
+
+    const findConv = await conversions.findOne({
+      name: "all",
+      type: "group"
+    })
+    if(!findConv) {
+      await conversions.create({
+        members: [],
+        type: "group",
+        name: "Nhóm chung",
+        sender_id: admin._id,
+        sender_name: admin.name,
+        receiver_id: admin._id,
+        receiver_name: admin.name
+      })
+    }
+
+
   } catch (error) {
     console.error(error);
   }
