@@ -89,7 +89,7 @@ class UserCtr {
       const _id =  req.params.id
       if (!_id)
         return res.status(500).send({ success: false, message: "no id" });
-      const user = userModel.findOneAndDelete({_id, role: 2})
+      const user = await userModel.findOneAndDelete({_id, role: 2})
       if(!user)
         return res.status(500).send({ success: false, message: "Deleted failed!" });
       res.send({success: true, message: "Delete completed!"})

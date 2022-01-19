@@ -2,9 +2,9 @@ POST http://localhost:3002/api/user/create
 Content-Type: application/json
 
 {
-    "phone": "3",
-    "name": "test 3",
-    "password": "1"
+    "phone": "0987654328",
+    "name": "test 39",
+    "password": "123456789"
 }
 
 ###
