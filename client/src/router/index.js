@@ -1,7 +1,8 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
-
+import Error from "../views/Error.vue";
+import store from "../store"
 Vue.use(VueRouter);
 
 const routes = [
@@ -20,6 +21,10 @@ const routes = [
     name: "Userlist",
     component: () => import("../views/Userlist.vue"),
   },
+  {
+    path: '/:match(.*)*',
+    component: Error
+  }
   // {
   //   path: '/about',
   //   name: 'About',
@@ -37,8 +42,16 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  console.log("to", to);
-  console.log("from", from);
+  // console.log("to", to);
+  // console.log("from", from);
+  if(to.name == "Userlist" ) {
+    if(store.state.user.auth && store.state.user.role === 0){
+      return next()
+    }
+    else {
+      next({path: "/"})
+    }
+  }
   next();
 });
 

@@ -16,8 +16,11 @@
               />
             </div>
             <h3>{{ user.name }}</h3>
+            <router-link v-if="user.role == '0'" to="/admin/list" style="margin-bottom: 20px;font-size: 18px;"> 
+              Quản lý user
+            </router-link>
           </div>
-          <button class="btn btn-success" @click="showCreateGroup" style="margin-bottom: 20px;">
+          <button class="btn btn-success" @click="showCreateGroup" style="margin-bottom: 20px;margin-top: 20px;">
             Tạo nhóm
           </button>
           <form v-if="isGroup" method="post" style="margin-bottom: 20px;">
