@@ -2,10 +2,10 @@ POST http://localhost:3002/api/user/create
 Content-Type: application/json
 
 {
-    "email":"user1@gmail.com",
-    "name": "user1",
-    "phone": "09348734312",
-    "password": "123456"
+    "email":"user2@gmail.com",
+    "name": "user2",
+    "phone": "0912345678",
+    "password": "12345678"
 }
 
 ###

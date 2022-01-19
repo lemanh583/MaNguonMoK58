@@ -12,8 +12,8 @@ POST http://localhost:3002/api/auth/login
 Content-Type: application/json
 
 {
-    "phone": "123456",
-    "password": "1234567"
+    "phone": "1234567899",
+    "password": "12345678"
 }
 
 ###
@@ -26,7 +26,7 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:3002/api/user/list
+POST http://localhost:3002/api/user/list
 
 ### 
 POST http://localhost:3002/api/conversion/create
