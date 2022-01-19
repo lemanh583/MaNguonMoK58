@@ -104,7 +104,7 @@ const seeder = async (req, res) => {
     })
     if(!findConv) {
       await conversions.create({
-        members: [],
+        members: [admin._id],
         type: "group",
         name: "Nhóm chung",
         sender_id: admin._id,
