@@ -99,7 +99,7 @@ const seeder = async (req, res) => {
     }
 
     const findConv = await conversions.findOne({
-      name: "all",
+      name: "Nhóm chung",
       type: "group"
     })
     if(!findConv) {
