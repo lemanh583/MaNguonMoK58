@@ -1,14 +1,14 @@
 <template>
   <div class="chatview">
     <div class="header">
-      <img src="../assets/images/cat.jpg" alt="" />
+      <img src="http://windows79.com/wp-content/uploads/2021/02/Thay-the-hinh-dai-dien-tai-khoan-nguoi-dung-mac.png" alt=""  style="margin-right: 20px;"/>
       <div>
         <div class="information">
           <div class="name">
             {{ conversion.name ? conversion.name : detailUser.name }}
           </div>
           <div class="member">
-            {{ conversion.name ? conversion.members.length : "" }} members
+            {{ conversion.name ? conversion.members.length + ' members': "" }} 
           </div>
         </div>
         <!-- <div v-b-toggle.my-collapse><i class="fas fa-ellipsis-v"></i></div> -->
@@ -201,29 +201,11 @@ export default {
           sender_id: "61cdf718eb771b1b32b73a32",
           conversion_id: "conversion_id",
           receiver_id: "received_id",
-          message: "Xin chào Việt Nam",
+          message: "Vui lòng chọn 1 cuộc trò chuyện",
           type: "private",
           created_time: "4567890",
           updated_time: "4567887",
-        },
-        {
-          sender_id: "7y43hf98137t58y9gr3",
-          conversion_id: "conversion_id",
-          receiver_id: "received_id",
-          message: "friend message",
-          type: "private",
-          created_time: "4567890",
-          updated_time: "4567887",
-        },
-        {
-          sender_id: "7y43hf98137t58y9gr3",
-          conversion_id: "conversion_id",
-          receiver_id: "received_id",
-          message: "friend message",
-          type: "private",
-          created_time: "4567890",
-          updated_time: "4567887",
-        },
+        }
       ],
       cvs_id: "",
       text: "",
@@ -247,7 +229,7 @@ export default {
   sockets: {
     getMessage: function (data) {
       this.messages.push(data);
-      // this.$emit("loadConver", true);
+      this.$emit("loadConver", true);
     },
   },
   // async mounted() {
@@ -304,10 +286,10 @@ export default {
             }
           );
           this.messages.push(res.data.data);
-          this.$socket.emit("sendMessage", res.data.data);
           console.log("updateConve", updateConve);
           this.text = "";
           this.$emit("loadConver", true);
+          this.$socket.emit("sendMessage", res.data.data);
         }
         console.log("res", res.data);
       } catch (error) {

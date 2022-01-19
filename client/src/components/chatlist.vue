@@ -17,15 +17,15 @@
             </div>
             <h3>{{ user.name }}</h3>
           </div>
-          <button class="btn btn-success" @click="showCreateGroup">
+          <button class="btn btn-success" @click="showCreateGroup" style="margin-bottom: 20px;">
             Tạo nhóm
           </button>
-          <form v-if="isGroup" method="post">
+          <form v-if="isGroup" method="post" style="margin-bottom: 20px;">
             <input
               type="text"
               v-model="groupName"
               class="form-control"
-              placeholder=""
+              placeholder="Nhấn enter sau khi đặt tên để hoàn thành"
             />
             <input v-show="false" type="submit" @click="handleCreateGroup" />
           </form>
@@ -57,7 +57,7 @@
             </div>
           </div>
         </b-sidebar>
-        <input class="input-search" type="search" placeholder="Tìm kiếm ..." />
+        <input class="input-search" type="search" v-model="search" @keyup="handleSearchConversion" placeholder="Tìm kiếm ..." />
       </div>
       <div class="chat-list">
         <div v-for="conv in listConversion" :key="conv._id">
@@ -66,7 +66,7 @@
             style=""
             @click="loadMessages(conv)"
           >
-            <img src="../assets/images/cat.jpg" alt="" />
+            <img src="http://windows79.com/wp-content/uploads/2021/02/Thay-the-hinh-dai-dien-tai-khoan-nguoi-dung-mac.png" alt="" />
             <div class="content">
               <div class="content-top">
                 <div class="name">
@@ -84,12 +84,12 @@
               </div>
               <div class="content-bot">
                 <div class="message">
-                  <div>{{conv.last_message ? conv.last_message.sender_id.name : '' }}:</div>
+                  <div>{{conv.last_message ? conv.last_message.sender_id.name + ' :' : '' }}</div>
                   <div>{{conv.last_message ? conv.last_message.message : ''}}</div>
                 </div>
-                <div class="unread-message">
+                <!-- <div class="unread-message">
                   <div class="number">1</div>
-                </div>
+                </div> -->
               </div>
             </div>
           </div>
@@ -122,6 +122,7 @@ export default {
       arrUserOnl: [],
       isGroup: false,
       groupName: "",
+      search: ""
     };
   },
   async created() {
@@ -135,7 +136,7 @@ export default {
       this.arrUserOnl = data;
       await this.getAllUser();
       this.listUser.forEach((val) => {
-        if (this.arrUserOnl.includes(val._id)) {
+        if (this.arrUserOnl.find(c => val._id == c.id)) {
           this.$set(val, "online", true);
         }
       });
@@ -232,11 +233,11 @@ export default {
       try {
         // let id = this.$store.state.user.id;
         let res = await axios.get(
-          `${process.env.VUE_APP_URL}/conversion/list/${this.user.id}`
+          `${process.env.VUE_APP_URL}/conversion/list/${this.user.id}?search=${this.search}`
         );
-        console.log(
-          `${process.env.VUE_APP_URL}/conversion/list/${this.user.id}`
-        );
+        // console.log(
+        //   `${process.env.VUE_APP_URL}/conversion/list/${this.user.id}`
+        // );
         console.log("listConv", res.data);
         if (res.data.success) {
           this.listConversion = res.data.data.filter(
@@ -290,6 +291,8 @@ export default {
         );
         if (res.data.success) {
           alert("thành công");
+          this.groupName = '';
+          await this.fetchConversion()
           // this.$emit("loadMess", res.data.data);
         }
         console.log("dvnsv", res.data);
@@ -297,6 +300,13 @@ export default {
         console.error(error.response);
       }
     },
+    async handleSearchConversion() {
+      try {
+        this.fetchConversion()
+      } catch (error) {
+        console.error(error.response);
+      }
+    }
   },
 };
 </script>
