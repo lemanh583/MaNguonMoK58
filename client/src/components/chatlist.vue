@@ -16,14 +16,28 @@
               />
             </div>
             <h3>{{ user.name }}</h3>
-            <router-link v-if="user.role == '0'" to="/admin/list" style="margin-bottom: 20px;font-size: 18px;"> 
+            <router-link
+              v-if="user.role == '0'"
+              to="/admin/list"
+              style="margin-bottom: 20px; font-size: 18px"
+            >
               Quản lý user
             </router-link>
+            /
+            <span
+              style="color: blue; font-size: 18px; cursor: pointer"
+              @click="handleLogout"
+              >Đăng xuất</span
+            >
           </div>
-          <button class="btn btn-success" @click="showCreateGroup" style="margin-bottom: 20px;margin-top: 20px;">
+          <button
+            class="btn btn-success"
+            @click="showCreateGroup"
+            style="margin-bottom: 20px; margin-top: 20px"
+          >
             Tạo nhóm
           </button>
-          <form v-if="isGroup" method="post" style="margin-bottom: 20px;">
+          <form v-if="isGroup" method="post" style="margin-bottom: 20px">
             <input
               type="text"
               v-model="groupName"
@@ -60,7 +74,13 @@
             </div>
           </div>
         </b-sidebar>
-        <input class="input-search" type="search" v-model="search" @keyup="handleSearchConversion" placeholder="Tìm kiếm ..." />
+        <input
+          class="input-search"
+          type="search"
+          v-model="search"
+          @keyup="handleSearchConversion"
+          placeholder="Tìm kiếm ..."
+        />
       </div>
       <div class="chat-list">
         <div v-for="conv in listConversion" :key="conv._id">
@@ -69,13 +89,17 @@
             style=""
             @click="loadMessages(conv)"
           >
-            <img src="http://windows79.com/wp-content/uploads/2021/02/Thay-the-hinh-dai-dien-tai-khoan-nguoi-dung-mac.png" alt="" />
+            <img
+              src="http://windows79.com/wp-content/uploads/2021/02/Thay-the-hinh-dai-dien-tai-khoan-nguoi-dung-mac.png"
+              alt=""
+            />
             <div class="content">
               <div class="content-top">
                 <div class="name">
                   {{
-                    conv.name ? conv.name : 
-                    conv.sender_id == user.id
+                    conv.name
+                      ? conv.name
+                      : conv.sender_id == user.id
                       ? conv.receiver_name
                       : conv.sender_name
                   }}
@@ -87,8 +111,16 @@
               </div>
               <div class="content-bot">
                 <div class="message">
-                  <div>{{conv.last_message ? conv.last_message.sender_id.name + ' :' : '' }}</div>
-                  <div>{{conv.last_message ? conv.last_message.message : ''}}</div>
+                  <div>
+                    {{
+                      conv.last_message
+                        ? conv.last_message.sender_id.name + " :"
+                        : ""
+                    }}
+                  </div>
+                  <div>
+                    {{ conv.last_message ? conv.last_message.message : "" }}
+                  </div>
                 </div>
                 <!-- <div class="unread-message">
                   <div class="number">1</div>
@@ -125,7 +157,7 @@ export default {
       arrUserOnl: [],
       isGroup: false,
       groupName: "",
-      search: ""
+      search: "",
     };
   },
   async created() {
@@ -139,7 +171,7 @@ export default {
       this.arrUserOnl = data;
       await this.getAllUser();
       this.listUser.forEach((val) => {
-        if (this.arrUserOnl.find(c => val._id == c.id)) {
+        if (this.arrUserOnl.find((c) => val._id == c.id)) {
           this.$set(val, "online", true);
         }
       });
@@ -206,7 +238,7 @@ export default {
     },
     async handleCreateConversion(user) {
       try {
-        console.log('user', user)
+        console.log("user", user);
         let token = localStorage.getItem("tokenSocket");
         let res = await axios.post(
           `${process.env.VUE_APP_URL}/conversion/create`,
@@ -294,8 +326,8 @@ export default {
         );
         if (res.data.success) {
           alert("thành công");
-          this.groupName = '';
-          await this.fetchConversion()
+          this.groupName = "";
+          await this.fetchConversion();
           // this.$emit("loadMess", res.data.data);
         }
         console.log("dvnsv", res.data);
@@ -305,11 +337,22 @@ export default {
     },
     async handleSearchConversion() {
       try {
-        this.fetchConversion()
+        this.fetchConversion();
       } catch (error) {
         console.error(error.response);
       }
-    }
+    },
+    handleLogout() {
+      localStorage.setItem("tokenSocket", "");
+      let user = {
+        name: "",
+        role: "",
+        id: "",
+        auth: false,
+      };
+      this.setUser(user);
+      this.$router.push({path: '/login'})
+    },
   },
 };
 </script>
