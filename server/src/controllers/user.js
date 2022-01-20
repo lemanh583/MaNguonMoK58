@@ -54,7 +54,7 @@ class UserCtr {
       const hashPass = bcrypt.hashSync(data.password, salt);
       data.password = hashPass;
       const check = await userModel.findOne({phone: data.phone})
-      // console.log('check', check)
+      console.log('check', check)
       if(check)
         return res.status(500).send({ success: false, message: "User exists" });
       const newUser = await userModel.create(data);

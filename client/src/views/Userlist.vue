@@ -19,12 +19,16 @@
             Submit
           </a-button>
         </template>
-        <div class="label">Name</div>
-        <input class="input" type="text" />
-        <div class="label">Phone</div>
-        <input class="input" type="text" />
-        <div class="label">Role</div>
-        <select class="input"></select>
+        <form action="" method="POST">
+          <div class="label">Name</div>
+          <input class="input" type="text" v-model="name" />
+          <div class="label">Phone</div>
+          <input class="input" type="text" v-model="phone" />
+          <div class="label">password</div>
+          <input class="input" type="password" v-model="password" />
+        </form>
+
+        <!-- <select class="input"></select> -->
       </a-modal>
     </div>
 
@@ -33,20 +37,57 @@
         <template slot="id" slot-scope="id, record, index">
           {{ index + 1 }}
         </template>
-        <template slot="operation">
+        <template slot="operation" slot-scope="text, record">
           <div class="action">
-            <button class="edit">Edit</button>
-            <button class="delete" @click="deleteClick(user._id)">
+            <button
+              v-if="record.role != 0"
+              class="edit"
+              @click="() => handleUpdate(record._id)"
+            >
+              Edit
+            </button>
+            <button
+              v-if="record.role != 0"
+              class="delete"
+              @click="deleteClick(record._id)"
+            >
               Delete
             </button>
           </div>
         </template>
       </a-table>
     </div>
+
+    <div>
+      <a-modal v-model="visibleEdit" title="Edit User" on-ok="handleOk">
+        <template slot="footer">
+          <a-button key="back" @click="handleCancel"> Return </a-button>
+          <a-button
+            key="submit"
+            type="primary"
+            :loading="loading"
+            @click="handleEditOk"
+          >
+            Submit
+          </a-button>
+        </template>
+        <form action="" method="POST">
+          <div class="label">Name</div>
+          <input class="input" type="text" v-model="name" />
+          <div class="label">Phone</div>
+          <input class="input" type="text" v-model="phone" />
+          <div class="label">password</div>
+          <input class="input" type="password" v-model="password" />
+        </form>
+
+        <!-- <select class="input"></select> -->
+      </a-modal>
+    </div>
   </div>
 </template>
 <script>
 import axios from "axios";
+import { mapMutations } from "vuex";
 const columns = [
   {
     title: "STT",
@@ -89,14 +130,28 @@ export default {
       UserId: 0,
       loading: false,
       visible: false,
+      visibleEdit: false,
+      name: "",
+      phone: "",
+      password: "",
+      id: ""
     };
   },
+  // async created() {
+  //   await this.checkToken();
+  // },
+  computed: {
+    // ...mapState(["user"]),
+  },
   methods: {
-    loadData() {
-      axios.post("http://localhost:3002/api/user/list").then((response) => {
-        this.users = response.data.data;
-        console.log(this.users);
-      });
+    ...mapMutations(["setUser"]),
+    async loadData() {
+      await axios
+        .post("http://localhost:3002/api/user/list")
+        .then((response) => {
+          this.users = response.data.data;
+          console.log(this.users);
+        });
     },
     addClick() {
       this.modalTitle = "Add User";
@@ -108,25 +163,38 @@ export default {
       this.UserId = user._id;
       this.UserName = user.name;
     },
-    createClick() {
-      axios
+    async createClick() {
+      await axios
         .post("http://localhost:3002/api/user/create", {
-          UserName: this.name,
+          name: this.name,
+          phone: this.phone,
+          password: this.password,
         })
-        .then((response) => {
+        .then(() => {
+          // console.log('response', response)
           this.loadData();
-          alert(response.data.data);
+          alert("Thêm thành công");
+        })
+        .catch((err) => {
+          console.error(err);
         });
     },
-    updateClick() {
-      axios
-        .put("http://localhost:3002/api/user/update/:id", {
-          UserId: this._id,
-          UserName: this.name,
-        })
+    async updateClick(id) {
+      let dataUpdate = {
+        name: this.name,
+        phone: this.phone
+      }
+      if(this.password) {
+        dataUpdate.password = this.password
+      }
+      await axios
+        .post(`http://localhost:3002/api/user/update/${id}`, dataUpdate)
         .then((response) => {
+          console.log('res-update', response)
           this.loadData();
-          alert(response.data.data);
+          alert('Thành công');
+        }).catch(err => {
+          console.error(err)
         });
     },
     deleteClick(_id) {
@@ -137,26 +205,80 @@ export default {
         .delete("http://localhost:3002/api/user/delete/" + _id)
         .then((response) => {
           console.log("res-delete", response);
-          // this.loadData();
-          // alert(response.data.data);
+          this.loadData();
+          alert("Xoá thành công");
         });
     },
     showModal() {
       this.visible = true;
     },
-    handleOk() {
+    async handleOk() {
       this.loading = true;
+      await this.createClick();
       setTimeout(() => {
         this.visible = false;
         this.loading = false;
       }, 3000);
     },
+    async handleEditOk() {
+      this.loading = true;
+      await this.updateClick(this.id);
+      // setTimeout(() => {
+        this.visibleEdit = false;
+        this.loading = false;
+      // }, 3000);
+    },
     handleCancel() {
       this.visible = false;
+      this.visibleEdit = false;
     },
+    async handleUpdate(id) {
+      try {
+        let rs = await axios.get(`http://localhost:3002/api/user/get/${id}`);
+        if(rs.data.success) {
+          this.name = rs.data.data.name
+          this.phone = rs.data.data.phone
+          this.password = ""
+          this.id = rs.data.data._id
+          this.visibleEdit = true
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    // async checkToken() {
+    //   try {
+    //     let token = localStorage.getItem("tokenSocket");
+    //     if (token) {
+    //       let response = await axios.get(
+    //         `${process.env.VUE_APP_URL}/user/check-token`,
+    //         {
+    //           headers: { Authorization: "Bearer " + token },
+    //         }
+    //       );
+    //       if (response.data.success) {
+    //         let user = {
+    //           name: response.data.data.name,
+    //           role: response.data.data.role,
+    //           id: response.data.data._id,
+    //           auth: true,
+    //         };
+    //         this.setUser(user);
+    //         return response.data;
+    //       }
+    //     } else {
+    //       this.$router.push({ path: "/login" });
+    //     }
+    //   } catch (error) {
+    //     console.error(error.response);
+    //     if (!error.response.data.success) {
+    //       this.$router.push({ path: "/login" });
+    //     }
+    //   }
+    // },
   },
-  mounted() {
-    this.loadData();
+  async mounted() {
+    await this.loadData();
   },
 };
 </script>
